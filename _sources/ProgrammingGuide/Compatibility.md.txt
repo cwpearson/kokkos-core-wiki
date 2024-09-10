@@ -2,12 +2,13 @@
 
 For a sufficiently clever user, effectively any change we make to Kokkos will be a breaking change. The intent of this document is to make it clear about what does and does not constitute supported use of Kokkos, as well as how Kokkos moves forward.
 
-There is a tension between the freedom to make improvements and backwards compatability.  We are presenting a set of rules that both allows the Kokkos Team to make improvements going forward while maintaining a high level of backwards compatibility (which avoids frustration and pain on the part of users).  While we do not deliberately set out to break users, we'd like to minimize accidental breakage while still allowing the Kokkos Team a good path forward.
+There is a tension between the freedom to make improvements and backward compatibility.  We are presenting a set of rules that allows the Kokkos Team to make improvements going forward while maintaining a high level of backward compatibility (which avoids frustration and pain on the part of users).  While we do not deliberately set out to break users, we'd like to minimize accidental breakage while still allowing the Kokkos Team a good path forward.
 
 Unless we document otherwise, please:
 
 * Avoid adding into `namespace Kokkos`
 * Avoid adding/removing/modifying macros starting with `KOKKOS_`
+* Avoid creating/removing/modifying files whose names start with `Kokkos_`
 
 This minimizes the chances that either Kokkos or user code is inadvertently broken by future changes.  
 
@@ -37,7 +38,7 @@ This namespace houses experimental features that are not yet ready for prime tim
 
 User defined macros can be particularly problematic, as they change what is lexically seen by the compiler and do not obey the language scoping rules.  They could interfere with variable names, functions, etc., including private ones used in Kokkos and other libraries.
 
-In order to minimize the risk of collisons, user defined macros should be prefaced with `MYPROJECT_` (or a similar way to disambiguate them) and be in all caps (this informs code readers that macros don't obey the usual syntactic and semantic rules of C++).
+In order to minimize the risk of collisions, user defined macros should be prefaced with `MYPROJECT_` (or a similar way to disambiguate them) and be in all caps (this informs code readers that macros don't obey the usual syntactic and semantic rules of C++).
 
 ## C++ Compatibility
 
@@ -54,9 +55,18 @@ Occasionally the Kokkos Team needs to remove things for overall improvements to 
 
 ## Headers
 
+Avoid creating/removing/modifying header files whose names start with `Kokkos_`, even under other parts of your project.  Depending on how your build system is set up, this can, for instance, cause the wrong file to be included and lead to many hours of wasted debugging time.
+
 The following are public headers:
 
     Kokkos_Core.hpp
+
+    // Since 4.2
+    Kokkos_Assert.hpp
+
+    // Since 4.3
+    Kokkos_Clamp.hpp
+    Kokkos_MinMax.hpp
 
 If a header is not public, please do not directly `#include` it.  It is not guaranteed to work now or continue to work in the future.  This includes any headers found in subdirectories.
 
